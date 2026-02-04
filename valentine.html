@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Be My Valentine</title>
+
+    <!-- Handwriting-style font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background-image: url('flower.gif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: 'Pacifico', 'Comic Sans MS', 'Segoe Script', cursive;
+        overflow: hidden;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path fill="%23ff4f7b" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4 8.04 4 9.54 4.81 10.24 6.09 10.94 4.81 12.44 4 13.98 4 16.48 4 18.48 6 18.48 8.5c0 3.78-3.4 6.86-8.05 11.54z"/></svg>')
+          12 12,
+        auto;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        transform: translateY(0); /* center block so buttons + countdown stay visible */
+        opacity: 0;
+        animation: fadeSlideIn 1.2s ease-out forwards;
+      }
+
+      .message-main {
+        font-size: clamp(36px, 5vw, 52px);
+        color: #000000; /* black text */
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.95),
+          0 0 18px rgba(255, 192, 203, 0.7);
+        padding: 8px 22px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.2) 70%, transparent 100%);
+      }
+
+      .message-sub {
+        font-size: clamp(17px, 2.6vw, 23px);
+        color: #000000;
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+        animation: fadeUp 1.2s ease-out forwards;
+        animation-delay: 0.3s;
+        opacity: 0;
+      }
+
+      .no-status {
+        font-size: 17px;
+        font-family: "Courier New", monospace;
+        text-transform: uppercase;
+        color: #000000;
+        min-height: 1.6em;
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 999px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+
+      .buttons {
+        margin-top: 10px;
+        display: flex;
+        gap: 20px;
+        animation: fadeUp 1.2s ease-out forwards;
+        animation-delay: 0.6s;
+        opacity: 0;
+      }
+
+      .btn {
+        padding: 10px 24px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        font-family: inherit;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .btn-yes {
+        position: relative;
+        background-color: #ff4f7b;
+        color: #ffffff;
+        border: 2px solid transparent;
+        animation: pulse 1.2s ease-in-out infinite;
+        overflow: visible;
+      }
+
+      .btn-yes:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+        background-color: #ff6a92;
+      }
+
+      .btn-yes::before,
+      .btn-yes::after {
+        content: "♥";
+        position: absolute;
+        top: -16px;
+        font-size: 16px;
+        color: #ff9bb7;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      .btn-yes::before {
+        left: -10px;
+      }
+
+      .btn-yes::after {
+        right: -10px;
+      }
+
+      .btn-yes:hover::before,
+      .btn-yes:hover::after {
+        opacity: 1;
+        transform: translateY(-2px);
+      }
+
+      .btn-no {
+        background-color: #ffffff;
+        color: #333333;
+      }
+
+      .btn-no:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+        background-color: #f3f3f3;
+      }
+
+      /* Floating hearts / petals */
+      .floating-layer {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        z-index: 5;
+      }
+
+      .heart {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: rgba(255, 182, 193, 0.9);
+        transform: rotate(45deg);
+        animation: floatDown 10s linear infinite;
+        opacity: 0.8;
+      }
+
+      .heart::before,
+      .heart::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: inherit;
+        border-radius: 50%;
+      }
+
+      .heart::before {
+        top: -10px;
+        left: 0;
+      }
+
+      .heart::after {
+        left: -10px;
+        top: 0;
+      }
+
+      /* Popup modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+      }
+
+      .modal-backdrop.show {
+        display: flex;
+      }
+
+      .modal {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 24px 28px;
+        max-width: 360px;
+        width: 90%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        text-align: center;
+      }
+
+      .modal-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #ff4f7b;
+      }
+
+      .modal-line {
+        font-size: 16px;
+        margin-bottom: 4px;
+        color: #333333;
+      }
+
+      .modal-section-title {
+        margin-top: 12px;
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .color-options {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .color-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .color-circle:hover {
+        transform: scale(1.12);
+        box-shadow: 0 0 0 3px rgba(255, 79, 123, 0.5);
+      }
+
+      .color-chosen-text {
+        margin-top: 12px;
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .color-circle.selected {
+        box-shadow: 0 0 0 3px rgba(255, 79, 123, 0.9);
+      }
+
+      /* Cute picture styling */
+      .photo-frame {
+        margin-top: 12px;
+        border-radius: 16px;
+        overflow: visible;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+        max-width: 260px;
+        animation: fadeUp 1s ease-out forwards;
+        animation-delay: 0.4s;
+        opacity: 0;
+        position: relative;
+      }
+
+      .photo-frame img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .photo-frame::before,
+      .photo-frame::after {
+        content: "";
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 182, 193, 0.95);
+        transform: rotate(45deg);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        z-index: -1;
+      }
+
+      .photo-frame::before {
+        top: -18px;
+        left: -18px;
+      }
+
+      .photo-frame::after {
+        bottom: -18px;
+        right: -18px;
+      }
+
+      .photo-frame::before,
+      .photo-frame::after {
+        border-radius: 8px;
+        z-index: 0;
+      }
+
+      /* Countdown styling */
+      .bottom-row {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;            /* for absolute signature */
+        width: min(100%, 620px);       /* nice width, still centered under buttons */
+      }
+
+      .countdown {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+        font-size: 15px;
+        font-family: "Courier New", monospace;
+        color: #333333;
+      }
+
+      .countdown-heart {
+        color: #ff4f7b;
+        font-size: 16px;
+      }
+
+      .signature {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #000000;
+        opacity: 0.9;
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.9);
+        font-family: 'Pacifico', 'Comic Sans MS', 'Segoe Script', cursive;
+      }
+
+      /* Sparkles around photo */
+      .sparkle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: radial-gradient(circle, #ffffff 0, #ffd6e7 45%, transparent 70%);
+        border-radius: 50%;
+        opacity: 0;
+        animation: sparkle 2.2s ease-in-out infinite;
+      }
+
+      .sparkle.s1 {
+        top: -8px;
+        left: 12%;
+        animation-delay: 0s;
+      }
+
+      .sparkle.s2 {
+        top: 10%;
+        right: -10px;
+        animation-delay: 0.6s;
+      }
+
+      .sparkle.s3 {
+        bottom: -8px;
+        left: 18%;
+        animation-delay: 1.2s;
+      }
+
+      .sparkle.s4 {
+        bottom: 8%;
+        right: -6px;
+        animation-delay: 1.8s;
+      }
+
+      @keyframes sparkle {
+        0% {
+          opacity: 0;
+          transform: scale(0.6);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        80% {
+          opacity: 0.7;
+          transform: scale(0.4);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+      }
+
+      /* Intro overlay */
+      .intro-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.96);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        transition: opacity 0.6s ease;
+      }
+
+      .intro-box {
+        padding: 18px 26px;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        font-family: 'Pacifico', 'Comic Sans MS', 'Segoe Script', cursive;
+        font-size: 24px;
+        text-align: center;
+        color: #ff4f7b;
+      }
+
+      @keyframes sparkle {
+        0% {
+          opacity: 0;
+          transform: scale(0.6);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        80% {
+          opacity: 0.7;
+          transform: scale(0.4);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.06);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes floatDown {
+        0% {
+          transform: translateY(-20vh) rotate(45deg);
+        }
+        100% {
+          transform: translateY(120vh) rotate(45deg);
+        }
+      }
+
+      @media (max-width: 600px) {
+        body {
+          align-items: flex-start;
+        }
+
+        .content {
+          transform: translateY(40px);
+        }
+
+        .buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="intro-overlay" class="intro-overlay">
+      <div class="intro-box">
+        <div id="intro-text">Preparing something special for you…</div>
+      </div>
+    </div>
+
+    <div class="floating-layer" id="floating-layer"></div>
+
+    <div id="main-content" class="content">
+      <div class="message-main">
+        Will you be my Valentine, Zhazhai?
+      </div>
+      <div id="message-sub" class="message-sub">
+        I, Jhajha, am asking you to be my Valentine this February 14
+      </div>
+      <div class="photo-frame">
+        <img src="IMG_2030 (1).JPG" alt="Us together" />
+        <span class="sparkle s1"></span>
+        <span class="sparkle s2"></span>
+        <span class="sparkle s3"></span>
+        <span class="sparkle s4"></span>
+      </div>
+      <div id="no-status" class="no-status"></div>
+      <div class="buttons">
+        <button id="btn-yes" class="btn btn-yes">Yes</button>
+        <button id="btn-no" class="btn btn-no">No</button>
+      </div>
+      <div class="bottom-row">
+        <div id="countdown" class="countdown"></div>
+        <div class="signature">Love, Jhajha ♡</div>
+      </div>
+    </div>
+
+    <!-- YES popup modal -->
+    <div id="yes-modal-backdrop" class="modal-backdrop">
+      <div class="modal">
+        <div class="modal-title">YAAY It's a date babe!!</div>
+        <div class="modal-line"><strong>Date:</strong> February 14, 2026</div>
+        <div class="modal-line"><strong>Time:</strong> 2 PM</div>
+
+        <div class="modal-section-title">Outfit Color</div>
+        <div class="color-options">
+          <div class="color-circle" data-color="Blue" style="background: #3b82f6"></div>
+          <div class="color-circle" data-color="White" style="background: #ffffff"></div>
+          <div class="color-circle" data-color="Black" style="background: #111827"></div>
+          <div class="color-circle" data-color="Cream" style="background: #f5e6c8"></div>
+          <div class="color-circle" data-color="Gray" style="background: #9ca3af"></div>
+        </div>
+
+        <div id="chosen-color-text" class="color-chosen-text">
+          The outfit color is: (not chosen yet)
+        </div>
+      </div>
+    </div>
+
+    <!-- Confetti library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <script>
+      const messages = [
+        "hala ayaw mo baby?",
+        "di mo na ako love?",
+        "kawawa naman ako",
+        "ayaw mo na sa akin?",
+        "pleaaassseeeee"
+      ];
+
+      const noButton = document.getElementById("btn-no");
+      const yesButton = document.getElementById("btn-yes");
+      const statusText = document.getElementById("no-status");
+
+      const yesModalBackdrop = document.getElementById("yes-modal-backdrop");
+      const colorCircles = document.querySelectorAll(".color-circle");
+      const chosenColorText = document.getElementById("chosen-color-text");
+      const floatingLayer = document.getElementById("floating-layer");
+      const countdownEl = document.getElementById("countdown");
+      const messageSubEl = document.getElementById("message-sub");
+      const introOverlay = document.getElementById("intro-overlay");
+      const introText = document.getElementById("intro-text");
+      const mainContent = document.getElementById("main-content");
+
+      let noClickCount = 0;
+      const baseFontSize = 20;
+
+      noButton.style.fontSize = baseFontSize + "px";
+
+      // Create floating hearts
+      function createHearts() {
+        for (let i = 0; i < 12; i++) {
+          const heart = document.createElement("div");
+          heart.className = "heart";
+          heart.style.left = Math.random() * 100 + "vw";
+          heart.style.animationDuration = 8 + Math.random() * 6 + "s";
+          heart.style.animationDelay = Math.random() * -10 + "s";
+          heart.style.opacity = 0.5 + Math.random() * 0.5;
+          floatingLayer.appendChild(heart);
+        }
+      }
+      createHearts();
+
+      // Mini loading intro + floating quote
+      function runIntro() {
+        if (!introOverlay || !introText || !mainContent) return;
+
+        mainContent.style.visibility = "hidden";
+
+        setTimeout(() => {
+          introText.textContent = "I love you to infinity and beyond";
+
+          setTimeout(() => {
+            introOverlay.style.opacity = "0";
+            introOverlay.style.pointerEvents = "none";
+            mainContent.style.visibility = "visible";
+          }, 1500);
+        }, 1000);
+      }
+      runIntro();
+
+      // Countdown to your date
+      function setupCountdown() {
+        if (!countdownEl) return;
+        const target = new Date("2026-02-14T14:00:00");
+
+        function updateCountdown() {
+          const now = new Date();
+          let diffMs = target.getTime() - now.getTime();
+          let days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          if (days < 0) days = 0;
+
+          countdownEl.innerHTML =
+            '<span class="countdown-heart">♥</span>' +
+            `<span>${days} days before February 14</span>` +
+            '<span class="countdown-heart">♥</span>';
+        }
+
+        updateCountdown();
+        // Update every hour (no need for every second)
+        setInterval(updateCountdown, 1000 * 60 * 60);
+      }
+      setupCountdown();
+
+      // Typewriter effect for the second line
+      function setupTyping() {
+        if (!messageSubEl) return;
+        const full = messageSubEl.textContent.trim();
+        messageSubEl.textContent = "";
+        let index = 0;
+        const speed = 40;
+
+        const interval = setInterval(() => {
+          index += 1;
+          messageSubEl.textContent = full.slice(0, index);
+          if (index >= full.length) {
+            clearInterval(interval);
+          }
+        }, speed);
+      }
+      setupTyping();
+
+      yesButton.addEventListener("click", () => {
+        statusText.textContent = "YAY, I LOVE YOU TOO!";
+        yesModalBackdrop.classList.add("show");
+
+        // After-Yes state: hide No button
+        if (noButton) {
+          noButton.remove();
+        }
+
+        // Confetti burst
+        if (window.confetti) {
+          const duration = 2000;
+          const end = Date.now() + duration;
+
+          (function frame() {
+            confetti({
+              particleCount: 6,
+              angle: 60,
+              spread: 75,
+              origin: { x: 0 },
+            });
+            confetti({
+              particleCount: 6,
+              angle: 120,
+              spread: 75,
+              origin: { x: 1 },
+            });
+
+            if (Date.now() < end) {
+              requestAnimationFrame(frame);
+            }
+          })();
+        }
+      });
+
+      // Close modal if user clicks outside the box
+      yesModalBackdrop.addEventListener("click", (e) => {
+        if (e.target === yesModalBackdrop) {
+          yesModalBackdrop.classList.remove("show");
+        }
+      });
+
+      // Color selection + highlight + mirror on Yes button border
+      colorCircles.forEach((circle) => {
+        circle.addEventListener("click", () => {
+          const color = circle.getAttribute("data-color");
+          chosenColorText.textContent = "The outfit color is: " + color;
+
+          colorCircles.forEach((c) => c.classList.remove("selected"));
+          circle.classList.add("selected");
+
+          const bg = window.getComputedStyle(circle).backgroundColor;
+          yesButton.style.borderColor = bg;
+        });
+      });
+
+      noButton.addEventListener("click", () => {
+        noClickCount += 1;
+
+        // Update status text (up to 5 clicks)
+        if (noClickCount <= messages.length) {
+          statusText.textContent = messages[noClickCount - 1];
+        }
+
+        if (noClickCount === 1) {
+          // First click: make it smaller
+          noButton.style.fontSize = baseFontSize * 0.8 + "px";
+        } else if (noClickCount === 2) {
+          // Second click: even smaller
+          noButton.style.fontSize = baseFontSize * 0.6 + "px";
+        } else if (noClickCount === 3) {
+          // Third click: back to original size, random location
+          noButton.style.fontSize = baseFontSize + "px";
+          moveNoButtonRandomly();
+        } else if (noClickCount === 4) {
+          // Fourth click: smaller again and random location
+          noButton.style.fontSize = baseFontSize * 0.6 + "px";
+          moveNoButtonRandomly();
+        } else if (noClickCount >= 5) {
+          // Fifth click or more: remove the button
+          noButton.remove();
+        }
+      });
+
+      function moveNoButtonRandomly() {
+        const btnWidth = noButton.offsetWidth || 80;
+        const btnHeight = noButton.offsetHeight || 40;
+
+        const maxX = window.innerWidth - btnWidth - 20;
+        const maxY = window.innerHeight - btnHeight - 20;
+
+        const randomX = Math.random() * maxX;
+        const randomY = Math.random() * maxY;
+
+        noButton.style.position = "fixed";
+        noButton.style.left = randomX + "px";
+        noButton.style.top = randomY + "px";
+      }
+    </script>
+  </body>
+</html>
