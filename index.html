@@ -340,6 +340,8 @@
       .confirmation-modal {
         max-width: 420px;
         padding: 32px;
+        max-height: 90vh;
+        overflow-y: auto;
       }
 
       .confirmation-title {
@@ -392,6 +394,71 @@
         font-weight: 600;
         margin-top: 10px;
         font-family: 'Pacifico', 'Comic Sans MS', 'Segoe Script', cursive;
+      }
+
+      .confirmation-close-btn {
+        display: block;
+        margin: 16px auto 0;
+        padding: 8px 20px;
+        border-radius: 20px;
+        border: 1px solid #ff4f7b;
+        background: #ffffff;
+        color: #ff4f7b;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .confirmation-close-btn:hover {
+        background: #ff4f7b;
+        color: #ffffff;
+      }
+
+      .confirmation-schedule {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 79, 123, 0.2);
+      }
+
+      .schedule-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ff4f7b;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .schedule-list {
+        text-align: left;
+        font-size: 13px;
+        color: #333333;
+      }
+
+      .schedule-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+
+      .schedule-item:last-child {
+        border-bottom: none;
+      }
+
+      .schedule-time {
+        flex-shrink: 0;
+        width: 130px;
+        min-width: 130px;
+        font-weight: 600;
+        color: #ff4f7b;
+        font-size: 12px;
+      }
+
+      .schedule-activity {
+        flex: 1;
+        min-width: 0;
       }
 
       /* Cute picture styling */
@@ -737,9 +804,43 @@
             <span id="confirmation-color" class="confirmation-value highlight">(chosen)</span>
           </div>
         </div>
+        <div class="confirmation-schedule">
+          <div class="schedule-title">📋 Our schedule</div>
+          <div class="schedule-list">
+            <div class="schedule-item">
+              <span class="schedule-time">2:00 PM – 2:30 PM</span>
+              <span class="schedule-activity">Pick you up at your house</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-time">2:30 PM – 3:00 PM</span>
+              <span class="schedule-activity">Ride to BGC on our motorcycle</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-time">3:00 PM – 3:30 PM</span>
+              <span class="schedule-activity">Walking around BGC</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-time">3:30 PM – 5:00 PM</span>
+              <span class="schedule-activity">Dinner at <span id="schedule-restaurant">(restaurant you chose)</span></span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-time">5:00 PM – 6:00 PM</span>
+              <span class="schedule-activity">Walk and buy gifts for each other</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-time">6:00 PM – 8:00 PM</span>
+              <span class="schedule-activity">Starbucks for coffees</span>
+            </div>
+            <div class="schedule-item">
+              <span class="schedule-time">8:00 PM – 9:00 PM</span>
+              <span class="schedule-activity">Head home</span>
+            </div>
+          </div>
+        </div>
         <div class="confirmation-footer">
           Can't wait to see you! 💕
         </div>
+        <button id="confirmation-close-btn" class="confirmation-close-btn">Close</button>
       </div>
     </div>
 
@@ -768,6 +869,7 @@
       const confirmationModalBackdrop = document.getElementById("confirmation-modal-backdrop");
       const confirmationRestaurant = document.getElementById("confirmation-restaurant");
       const confirmationColor = document.getElementById("confirmation-color");
+      const scheduleRestaurantEl = document.getElementById("schedule-restaurant");
       const floatingLayer = document.getElementById("floating-layer");
       const countdownEl = document.getElementById("countdown");
       const messageSubEl = document.getElementById("message-sub");
@@ -947,6 +1049,9 @@
             confirmationRestaurant.textContent = selectedRestaurant;
             confirmationColor.textContent = selectedColor;
           }
+          if (scheduleRestaurantEl && selectedRestaurant) {
+            scheduleRestaurantEl.textContent = selectedRestaurant;
+          }
           
           // Hide the first modal and show confirmation modal
           yesModalBackdrop.classList.remove("show");
@@ -971,6 +1076,13 @@
           if (e.target === confirmationModalBackdrop) {
             confirmationModalBackdrop.classList.remove("show");
           }
+        });
+      }
+
+      const confirmationCloseBtn = document.getElementById("confirmation-close-btn");
+      if (confirmationCloseBtn) {
+        confirmationCloseBtn.addEventListener("click", () => {
+          confirmationModalBackdrop.classList.remove("show");
         });
       }
 
