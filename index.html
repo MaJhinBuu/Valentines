@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -263,6 +264,134 @@
 
       .color-circle.selected {
         box-shadow: 0 0 0 3px rgba(255, 79, 123, 0.9);
+      }
+
+      /* Restaurant selection styling */
+      .restaurant-options {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .restaurant-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 2px solid #ff4f7b;
+        background: #ffffff;
+        color: #ff4f7b;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        width: 80%;
+        max-width: 200px;
+      }
+
+      .restaurant-btn:hover {
+        background: #ff4f7b;
+        color: #ffffff;
+        transform: scale(1.05);
+      }
+
+      .restaurant-btn.selected {
+        background: #ff4f7b;
+        color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(255, 79, 123, 0.3);
+      }
+
+      .restaurant-chosen-text {
+        margin-top: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333333;
+      }
+
+      /* Okay button styling */
+      .okay-btn {
+        margin-top: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 12px 28px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(135deg, #ff4f7b, #ff6a92);
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(255, 79, 123, 0.4);
+        transition: all 0.3s ease;
+        font-family: 'Pacifico', 'Comic Sans MS', 'Segoe Script', cursive;
+        display: block;
+      }
+
+      .okay-btn:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(255, 79, 123, 0.6);
+      }
+
+      .okay-btn:active {
+        transform: translateY(0) scale(1);
+      }
+
+      /* Confirmation modal styling */
+      .confirmation-modal {
+        max-width: 420px;
+        padding: 32px;
+      }
+
+      .confirmation-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #ff4f7b;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .confirmation-content {
+        text-align: left;
+        margin-bottom: 20px;
+      }
+
+      .confirmation-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 79, 123, 0.1);
+      }
+
+      .confirmation-item:last-child {
+        border-bottom: none;
+      }
+
+      .confirmation-label {
+        font-weight: 600;
+        color: #666666;
+        font-size: 15px;
+      }
+
+      .confirmation-value {
+        font-weight: 500;
+        color: #333333;
+        font-size: 15px;
+      }
+
+      .confirmation-value.highlight {
+        color: #ff4f7b;
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .confirmation-footer {
+        text-align: center;
+        font-size: 18px;
+        color: #ff4f7b;
+        font-weight: 600;
+        margin-top: 10px;
+        font-family: 'Pacifico', 'Comic Sans MS', 'Segoe Script', cursive;
       }
 
       /* Cute picture styling */
@@ -547,6 +676,20 @@
         <div class="modal-title">YAAY It's a date babe!!</div>
         <div class="modal-line"><strong>Date:</strong> February 14, 2026</div>
         <div class="modal-line"><strong>Time:</strong> 2 PM</div>
+        <div class="modal-line"><strong>Location:</strong> BGC, Taguig</div>
+
+        <div class="modal-section-title">Where will we eat?</div>
+        <div class="restaurant-options">
+          <button class="restaurant-btn" data-restaurant="Pound">Pound</button>
+          <button class="restaurant-btn" data-restaurant="Din Tai Fung">Din Tai Fung</button>
+          <button class="restaurant-btn" data-restaurant="Chilis">Chilis</button>
+          <button class="restaurant-btn" data-restaurant="Fridays">Fridays</button>
+          <button class="restaurant-btn" data-restaurant="Marugame">Marugame</button>
+        </div>
+
+        <div id="chosen-restaurant-text" class="restaurant-chosen-text">
+          Restaurant: (not chosen yet)
+        </div>
 
         <div class="modal-section-title">Outfit Color</div>
         <div class="color-options">
@@ -559,6 +702,42 @@
 
         <div id="chosen-color-text" class="color-chosen-text">
           The outfit color is: (not chosen yet)
+        </div>
+
+        <button id="okay-btn" class="okay-btn" style="display: none;">
+          Okay, I'm ready! ♡
+        </button>
+      </div>
+    </div>
+
+    <!-- Confirmation modal -->
+    <div id="confirmation-modal-backdrop" class="modal-backdrop">
+      <div class="modal confirmation-modal">
+        <div class="confirmation-title">Perfect! Here's our date details:</div>
+        <div class="confirmation-content">
+          <div class="confirmation-item">
+            <span class="confirmation-label">📅 Date:</span>
+            <span class="confirmation-value">February 14, 2026</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">🕐 Time:</span>
+            <span class="confirmation-value">2 PM</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">📍 Location:</span>
+            <span class="confirmation-value">BGC, Taguig</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">🍽️ Restaurant:</span>
+            <span id="confirmation-restaurant" class="confirmation-value highlight">(chosen)</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">👗 Outfit Color:</span>
+            <span id="confirmation-color" class="confirmation-value highlight">(chosen)</span>
+          </div>
+        </div>
+        <div class="confirmation-footer">
+          Can't wait to see you! 💕
         </div>
       </div>
     </div>
@@ -582,12 +761,21 @@
       const yesModalBackdrop = document.getElementById("yes-modal-backdrop");
       const colorCircles = document.querySelectorAll(".color-circle");
       const chosenColorText = document.getElementById("chosen-color-text");
+      const restaurantButtons = document.querySelectorAll(".restaurant-btn");
+      const chosenRestaurantText = document.getElementById("chosen-restaurant-text");
+      const okayBtn = document.getElementById("okay-btn");
+      const confirmationModalBackdrop = document.getElementById("confirmation-modal-backdrop");
+      const confirmationRestaurant = document.getElementById("confirmation-restaurant");
+      const confirmationColor = document.getElementById("confirmation-color");
       const floatingLayer = document.getElementById("floating-layer");
       const countdownEl = document.getElementById("countdown");
       const messageSubEl = document.getElementById("message-sub");
       const introOverlay = document.getElementById("intro-overlay");
       const introText = document.getElementById("intro-text");
       const mainContent = document.getElementById("main-content");
+
+      let selectedRestaurant = null;
+      let selectedColor = null;
 
       let noClickCount = 0;
       const baseFontSize = 20;
@@ -709,10 +897,21 @@
         }
       });
 
+      // Function to check if both restaurant and color are selected, then show Okay button
+      function checkIfReady() {
+        if (selectedRestaurant && selectedColor && okayBtn) {
+          okayBtn.style.display = "block";
+          okayBtn.style.animation = "fadeUp 0.5s ease-out forwards";
+        } else if (okayBtn) {
+          okayBtn.style.display = "none";
+        }
+      }
+
       // Color selection + highlight + mirror on Yes button border
       colorCircles.forEach((circle) => {
         circle.addEventListener("click", () => {
           const color = circle.getAttribute("data-color");
+          selectedColor = color;
           chosenColorText.textContent = "The outfit color is: " + color;
 
           colorCircles.forEach((c) => c.classList.remove("selected"));
@@ -720,8 +919,59 @@
 
           const bg = window.getComputedStyle(circle).backgroundColor;
           yesButton.style.borderColor = bg;
+          
+          checkIfReady();
         });
       });
+
+      // Restaurant selection
+      restaurantButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const restaurant = btn.getAttribute("data-restaurant");
+          selectedRestaurant = restaurant;
+          chosenRestaurantText.textContent = "Restaurant: " + restaurant;
+
+          restaurantButtons.forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          
+          checkIfReady();
+        });
+      });
+
+      // Okay button click handler
+      if (okayBtn) {
+        okayBtn.addEventListener("click", () => {
+          // Update confirmation modal with her choices
+          if (confirmationRestaurant && confirmationColor) {
+            confirmationRestaurant.textContent = selectedRestaurant;
+            confirmationColor.textContent = selectedColor;
+          }
+          
+          // Hide the first modal and show confirmation modal
+          yesModalBackdrop.classList.remove("show");
+          setTimeout(() => {
+            confirmationModalBackdrop.classList.add("show");
+            
+            // Extra confetti for confirmation!
+            if (window.confetti) {
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+            }
+          }, 300);
+        });
+      }
+
+      // Close confirmation modal if user clicks outside
+      if (confirmationModalBackdrop) {
+        confirmationModalBackdrop.addEventListener("click", (e) => {
+          if (e.target === confirmationModalBackdrop) {
+            confirmationModalBackdrop.classList.remove("show");
+          }
+        });
+      }
 
       noButton.addEventListener("click", () => {
         noClickCount += 1;
